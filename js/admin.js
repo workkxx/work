@@ -1,8 +1,8 @@
-import { store, DEMO } from './store.js';
-import { OWNER_EMAIL } from './config.js';
-import { esc, normalize, uid, STATUS } from './common.js';
-import { TEMPLATE } from './demo-data.js';
-import { createClientsUI } from './admin-clients.js';
+import { store, DEMO } from './store.js?v=20261124b';
+import { OWNER_EMAIL } from './config.js?v=20261124b';
+import { esc, normalize, uid, STATUS } from './common.js?v=20261124b';
+import { TEMPLATE } from './demo-data.js?v=20261124b';
+import { createClientsUI } from './admin-clients.js?v=20261124b';
 
 const S = await store;
 const app = document.getElementById('app');

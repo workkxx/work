@@ -4,13 +4,13 @@
 //  還沒填的時候，網站會自動進入「示範模式」（資料只存在這台瀏覽器）。
 // ==========================================================
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyAkD0-mVT5ONRer7-uwkYoZBYK7BmW4oUU",
+  authDomain: "work-4ed9f.firebaseapp.com",
+  projectId: "work-4ed9f",
+  storageBucket: "work-4ed9f.firebasestorage.app",
+  messagingSenderId: "186006198481",
+  appId: "1:186006198481:web:c0d65293b778efafb00df0"
 };
 
 // 唯一可以登入後台的 Google 帳號（要和 firestore.rules 裡的一樣）
-export const OWNER_EMAIL = "you@gmail.com";
+export const OWNER_EMAIL = "workkxx@gmail.com";

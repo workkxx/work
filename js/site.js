@@ -1,6 +1,6 @@
-import { store, DEMO } from './store.js';
-import { OWNER_EMAIL } from './config.js';
-import { esc, rich, priceHTML, addonPrice, fmt, STATUS } from './common.js';
+import { store, DEMO } from './store.js?v=20261124b';
+import { OWNER_EMAIL } from './config.js?v=20261124b';
+import { esc, rich, priceHTML, addonPrice, fmt, STATUS } from './common.js?v=20261124b';
 
 const page = document.body.dataset.page;
 const main = document.getElementById('main');
