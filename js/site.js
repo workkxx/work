@@ -1,6 +1,6 @@
-import { store, DEMO } from './store.js?v=20261124g';
-import { OWNER_EMAIL } from '../config.js?v=20261124g';
-import { esc, rich, priceHTML, addonPrice, fmt, STATUS } from './common.js?v=20261124g';
+import { store, DEMO } from './store.js?v=20261124i';
+import { OWNER_EMAIL } from '../config.js?v=20261124i';
+import { esc, rich, priceHTML, addonPrice, fmt, STATUS } from './common.js?v=20261124i';
 
 const page = document.body.dataset.page;
 const main = document.getElementById('main');
@@ -31,12 +31,13 @@ document.body.classList.add('ready');
 // ================= 外框 =================
 function shell({ settings: s }) {
   document.documentElement.style.setProperty('--accent', s.accent || '#AAA55A');
+  NAV.forEach(n => { const v = (s.navLabels || {})[n[0]]; if (v && v.trim()) n[2] = v.trim(); });
   const cur = NAV.find(n => n[0] === page);
   document.title = page === 'home' ? s.siteName : `${cur[2]}｜${s.siteName}`;
   const st = STATUS[s.status] || STATUS.closed;
 
   document.getElementById('site-header').innerHTML = DEMO ? '<div class="demo-bar">DEMO MODE // 尚未連接 Firebase，內容為範例資料</div>' : '';
-  document.getElementById('site-nav').innerHTML = NAV.map(([k, href, zh]) => `<a href="${href}" class="${k === page ? 'on' : ''}">${zh}</a>`).join('');
+  document.getElementById('site-nav').innerHTML = NAV.map(([k, href, zh]) => `<a href="${href}" class="${k === page ? 'on' : ''}">${esc(zh)}</a>`).join('');
 
   document.getElementById('site-footer').innerHTML = '<div class="foot">©HIWA</div>';
 }
@@ -52,6 +53,8 @@ function statusNote(text) {
   }
   return groups.map(g => `<div class="sn-col">${g.join('')}</div>`).join('');
 }
+
+function label(k) { return esc(NAV.find(n => n[0] === k)[2]); }
 
 // 筆記本紙張：SUBJECT / DATE / 貼紙框
 function sheet(subject, en, body, s) {
@@ -153,7 +156,7 @@ function price({ settings: s, content: c, categories }) {
     </section>` : ''}
     ${s.commercialNote ? block('COMM.', '商業用途', `<div class="prose lined">${rich(s.commercialNote)}</div>`) : ''}
     <div class="must-read"><span class="mr-mark">!</span><p>委託前請務必閱讀 <a href="rules.html">委託須知</a>。</p></div>`;
-  main.innerHTML = sheet('價目表', 'PRICE LIST', body, s);
+  main.innerHTML = sheet(label('price'), 'PRICE LIST', body, s);
   main.querySelectorAll('[data-gallery]').forEach(b => b.addEventListener('click', () => gallery(b.dataset.gallery.split(','))));
 }
 
@@ -172,7 +175,7 @@ function rules({ settings: s, content: c }) {
       ${c.payment.length ? `<ul class="pay">${c.payment.map(p => `<li><b>${esc(p.name)}</b>${p.note ? `<span>${esc(p.note)}</span>` : ''}</li>`).join('')}</ul>` : ''}
       ${c.paymentNote ? `<div class="prose lined">${rich(c.paymentNote)}</div>` : ''}`, 'id="payment"') : ''}
     ${c.rules.map((r, i) => block(`§${pad(i + 1)}`, esc(r.title), `<div class="prose lined">${rich(r.body)}</div>`, `id="rule-${i}"`)).join('')}`;
-  main.innerHTML = sheet('委託須知', 'TERMS', body, s);
+  main.innerHTML = sheet(label('rules'), 'TERMS', body, s);
 }
 
 // ================= FAQ =================
@@ -180,7 +183,7 @@ function faq({ settings: s, content: c }) {
   const body = `<div class="faq">
     ${c.faqs.length ? c.faqs.map((f, i) => `<details><summary><span class="q">Q.${pad(i + 1)}</span><span class="qt">${esc(f.q)}</span></summary><div class="prose a">${rich(f.a)}</div></details>`).join('') : '<p class="empty">目前沒有常見問題。</p>'}
   </div>`;
-  main.innerHTML = sheet('常見問題', 'FAQ', body, s);
+  main.innerHTML = sheet(label('faq'), 'FAQ', body, s);
 }
 
 // ================= 關於與聯絡 =================
@@ -200,7 +203,7 @@ function about({ settings: s, content: { about: a } }) {
     ${a.official.length ? block('WARNING', '謹防詐騙', `
       ${a.officialNote ? `<div class="prose lined">${rich(a.officialNote)}</div>` : ''}
       <table class="acc">${a.official.map(o => `<tr><th>${esc(o.platform)}</th><td>${esc(o.account)}</td></tr>`).join('')}</table>`) : ''}`;
-  main.innerHTML = sheet('關於與聯絡', 'ABOUT & CONTACT', body, s);
+  main.innerHTML = sheet(label('about'), 'ABOUT & CONTACT', body, s);
 }
 
 // ================= 會員查詢 =================
@@ -208,7 +211,7 @@ function member({ settings: s, content: c }) {
   const notes =
     (c.memberNote ? block('POINTS', '點數規則', `<div class="prose lined">${rich(c.memberNote)}</div>`) : '') +
     (c.privacyNote ? block('PRIVACY', '資料與隱私', `<div class="prose lined">${rich(c.privacyNote)}</div>`) : '');
-  const render = inner => { main.innerHTML = sheet('會員查詢', 'MEMBER', inner + notes, s); };
+  const render = inner => { main.innerHTML = sheet(label('member'), 'MEMBER', inner + notes, s); };
 
   const loginBox = () => block('LOGIN', '登入查詢', `
     <p class="mem-text">請使用<strong>委託時提供的 Gmail</strong> 登入，即可查看你的委託紀錄與點數。<br>只會顯示屬於你自己的資料。</p>

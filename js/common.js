@@ -3,7 +3,7 @@ export const DEFAULTS = {
   settings: {
     siteName: '委託價目表', subtitle: '', status: 'closed', statusText: '', announcement: '',
     accent: '#AAA55A', logo: '', footerText: '', commercialRate: null, commercialNote: '',
-    marquee: '', heroTitle: 'COMMISSION', heroImage: '',
+    marquee: '', heroTitle: 'COMMISSION', heroImage: '', navLabels: {},
   },
   content: {
     process: [], payment: [], paymentNote: '',
@@ -25,7 +25,7 @@ export function normalize(d = {}) {
   const content = { ...D.content, ...(d.content || {}) };
   content.about = { ...D.content.about, ...((d.content && d.content.about) || {}) };
   return {
-    settings: { ...D.settings, ...(d.settings || {}) },
+    settings: { ...D.settings, ...(d.settings || {}), navLabels: { ...((d.settings && d.settings.navLabels) || {}) } },
     content,
     categories: (d.categories || []).map(c => ({
       id: c.id || uid(), name: '', desc: '', notes: '', visible: true, ...c,

@@ -1,8 +1,8 @@
-import { store, DEMO } from './store.js?v=20261124g';
-import { OWNER_EMAIL } from '../config.js?v=20261124g';
-import { esc, normalize, uid, STATUS } from './common.js?v=20261124g';
-import { TEMPLATE } from './demo-data.js?v=20261124g';
-import { createClientsUI } from './admin-clients.js?v=20261124g';
+import { store, DEMO } from './store.js?v=20261124i';
+import { OWNER_EMAIL } from '../config.js?v=20261124i';
+import { esc, normalize, uid, STATUS } from './common.js?v=20261124i';
+import { TEMPLATE } from './demo-data.js?v=20261124i';
+import { createClientsUI } from './admin-clients.js?v=20261124i';
 
 const S = await store;
 const app = document.getElementById('app');
@@ -167,7 +167,11 @@ const PANELS = {
       ${f.text('settings.siteName', '網站名稱')}
       ${f.color('settings.accent', '主題色')}
     </div>`) +
-    card('接案狀態', `
+    card('分頁名稱', `<p class="muted sm" style="margin:-6px 0 12px">左側分頁標籤與各頁標題的名稱，留空就用預設值。</p><div class="grid3">
+      ${[['home', '首頁'], ['price', '價目表'], ['rules', '委託須知'], ['faq', '常見問題'], ['about', '聯絡'], ['member', '會員查詢']]
+        .map(([k, d]) => f.text(`settings.navLabels.${k}`, d, { ph: d })).join('')}
+    </div>`) +
+        card('接案狀態', `
       ${f.select('settings.status', '狀態', Object.entries(STATUS).map(([k, v]) => [k, v.label]))}
       ${f.area('settings.statusText', '狀態說明（顯示在每頁右上角 STATUS 框）', { rows: 5, ph: '【 商用 】\n可來信詢問\n【 非商用 】\n預計2027年2月開放', hint: '以「【」開頭的那一行是粗體標題，標題和下面幾行會成一欄，各欄並排顯示' })}`) +
     card('首頁公告', f.area('settings.announcement', '公告內容', { rows: 6, hint: RICH_HINT })) +
