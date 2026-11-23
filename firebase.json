@@ -1,0 +1,10 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": ["firebase.json", "firestore.rules", ".firebaserc", "README.md", "上傳教學.md", "**/.*"],
+    "cleanUrls": false
+  }
+}
