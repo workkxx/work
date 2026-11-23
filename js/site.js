@@ -34,24 +34,11 @@ function shell({ settings: s }) {
   const cur = NAV.find(n => n[0] === page);
   document.title = page === 'home' ? s.siteName : `${cur[2]}｜${s.siteName}`;
   const st = STATUS[s.status] || STATUS.closed;
-  const mq = s.marquee || `/// ${s.siteName} /// COMMISSION ${st.en} ///`;
 
-  document.getElementById('site-header').innerHTML = `
-    ${DEMO ? '<div class="demo-bar">DEMO MODE // 尚未連接 Firebase，內容為範例資料</div>' : ''}
-    <div class="marquee"><div class="marquee-track"><span>${esc(mq)}&emsp;</span><span>${esc(mq)}&emsp;</span><span>${esc(mq)}&emsp;</span><span>${esc(mq)}&emsp;</span></div></div>
-    <div class="topbar">
-      <a class="brand" href="index.html">${s.logo ? `<img data-thumb="${esc(s.logo)}" alt="">` : ''}<span>${esc(s.siteName)}</span></a>
-      <span class="status-chip st-${esc(s.status)}"><i></i>${st.en}</span>
-    </div>
-    <nav class="side-nav">
-      ${NAV.map(([k, href, zh, en]) => `<a class="side-btn ${k === page ? 'active' : ''}" href="${href}"><small>${en}</small>${zh}</a>`).join('')}
-    </nav>`;
+  document.getElementById('site-header').innerHTML = DEMO ? '<div class="demo-bar">DEMO MODE // 尚未連接 Firebase，內容為範例資料</div>' : '';
+  document.getElementById('site-nav').innerHTML = NAV.map(([k, href, zh]) => `<a href="${href}" class="${k === page ? 'on' : ''}">${zh}</a>`).join('');
 
-  document.getElementById('site-footer').innerHTML = `
-    <div class="foot">
-      <div class="foot-left">© ${new Date().getFullYear()} ${esc(s.siteName).toUpperCase()}${s.footerText ? `<br><span>${esc(s.footerText)}</span>` : ''}</div>
-      <a class="foot-mail" href="about.html">CONTACT ▸</a>
-    </div>`;
+  document.getElementById('site-footer').innerHTML = '<div class="foot">©HIWA</div>';
 }
 
 // 筆記本紙張：SUBJECT / DATE / 貼紙框

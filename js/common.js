@@ -100,7 +100,7 @@ export async function compressImage(file, maxEdge, maxChars) {
     const w = Math.max(1, Math.round(bmp.width * scale)), h = Math.max(1, Math.round(bmp.height * scale));
     c.width = w; c.height = h;
     const ctx = c.getContext('2d');
-    if (type === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+    if (type === 'image/jpeg') { ctx.fillStyle = '#FAFAFA'; ctx.fillRect(0, 0, w, h); }
     ctx.drawImage(bmp, 0, 0, w, h);
     const data = c.toDataURL(type, q);
     if (data.length <= maxChars) return { data, w, h };

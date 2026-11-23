@@ -167,10 +167,8 @@ const PANELS = {
       ${f.text('settings.siteName', '網站名稱')}
       ${f.text('settings.subtitle', '副標題', { ph: '例：插圖・角色設定' })}
     </div>
-    <div class="grid2">${f.img('settings.logo', 'Logo（可不放）')}${f.color('settings.accent', '主題色')}</div>
-    ${f.text('settings.footerText', '頁尾文字', { ph: '例：本站內容請勿轉載' })}`) +
-    card('首頁封面與跑馬燈', `
-      ${f.text('settings.marquee', '跑馬燈文字', { ph: '/// COMMISSION OPEN /// 1 月檔期剩 2 名 ///', hint: '顯示在每一頁最上方，留空會自動用網站名稱與狀態' })}
+    ${f.color('settings.accent', '主題色')}`) +
+    card('首頁封面', `
       <div class="grid2">${f.text('settings.heroTitle', '封面大標', { ph: 'COMMISSION', hint: '第一個字母後面會加上主題色的 ✸' })}${f.img('settings.heroImage', '封面圖（建議橫幅 1600×500 以上）')}</div>`) +
     card('接案狀態', `<div class="grid2">
       ${f.select('settings.status', '狀態', Object.entries(STATUS).map(([k, v]) => [k, v.label]))}
