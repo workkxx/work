@@ -1,5 +1,5 @@
 // 後台「匯入資料」：貼上或選擇 JSON → 預覽 → 套用到後台（還沒寫入資料庫，按「儲存變更」才會存）
-import { esc, uid, DEFAULTS } from './common.js?v=20261124j';
+import { esc, uid, DEFAULTS } from './common.js?v=20261124n';
 
 const SETTINGS_KEYS = Object.keys(DEFAULTS.settings);
 const CONTENT_KEYS = Object.keys(DEFAULTS.content);
@@ -30,14 +30,24 @@ export const IMPORT_EXAMPLE = `{
   }
 }`;
 
+// mode 可以是 "append" / "replace"，或依區塊分別指定：{ "categories": "append", "content": "replace", "faqs": "append" }
+function modeFor(d, key) {
+  const m = d.mode;
+  if (m && typeof m === 'object') {
+    const v = m[key] ?? (key === 'categories' ? undefined : m.content);
+    return v === 'append' ? 'append' : 'replace';
+  }
+  return m === 'append' ? 'append' : 'replace';
+}
+
 export function createImportUI({ getState, markDirty, removeCats, queueDel, rerender, toast }) {
   let parsed = null, report = null;
 
   function analyse(d) {
     const out = { ok: [], warn: [] };
     if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('最外層必須是 { } 物件');
-    const mode = d.mode === 'append' ? 'append' : 'replace';
-    out.mode = mode;
+    const modeOf = key => modeFor(d, key);
+    out.mode = typeof d.mode === 'object' && d.mode ? 'mixed' : modeOf('categories');
     for (const k of Object.keys(d)) if (!['mode', 'settings', 'content', 'categories', 'version'].includes(k)) out.warn.push(`不認得的欄位「${k}」，會略過`);
     if (d.settings) {
       for (const k of Object.keys(d.settings)) {
@@ -49,7 +59,7 @@ export function createImportUI({ getState, markDirty, removeCats, queueDel, rere
       for (const k of Object.keys(d.content)) {
         if (!CONTENT_KEYS.includes(k)) { out.warn.push(`內容裡不認得「${k}」，會略過`); continue; }
         const v = d.content[k];
-        if (Array.isArray(v)) out.ok.push(`${CONTENT_NAMES[k] || k}：${mode === 'append' ? '新增' : '取代為'} ${v.length} 筆`);
+        if (Array.isArray(v)) out.ok.push(`${CONTENT_NAMES[k] || k}：${modeOf(k) === 'append' ? '新增' : '取代為'} ${v.length} 筆`);
         else if (k === 'about') out.ok.push(`關於與聯絡：更新 ${Object.keys(v || {}).filter(x => ABOUT_KEYS.includes(x)).length} 個欄位`);
         else out.ok.push(`${CONTENT_NAMES[k] || k}：更新`);
       }
@@ -57,26 +67,27 @@ export function createImportUI({ getState, markDirty, removeCats, queueDel, rere
     if (d.categories) {
       if (!Array.isArray(d.categories)) throw new Error('categories 必須是陣列 [ ]');
       const n = d.categories.reduce((t, c) => t + (c.items || []).length, 0);
-      out.ok.push(`價目表：${mode === 'append' ? '新增' : '取代為'} ${d.categories.length} 個類別、${n} 個項目`);
-      if (mode === 'replace') out.warn.push('取代模式：目前價目表的所有類別會被換掉（儲存後才生效）');
+      out.ok.push(`價目表：${modeOf('categories') === 'append' ? '新增' : '取代為'} ${d.categories.length} 個類別、${n} 個項目`);
+      if (modeOf('categories') === 'replace') out.warn.push('價目表為取代：目前價目表的所有類別會被換掉（儲存後才生效）');
     }
     if (!out.ok.length) throw new Error('沒有可以匯入的內容');
     return out;
   }
 
   const cleanCat = c => ({
-    id: uid(), name: String(c.name || '新類別'), desc: String(c.desc || ''), notes: String(c.notes || ''), visible: c.visible !== false,
+    id: uid(), name: String(c.name || '新類別'), desc: String(c.desc || ''), callout: String(c.callout || ''), notes: String(c.notes || ''), visible: c.visible !== false,
     items: (c.items || []).map(it => ({
       id: uid(), name: String(it.name || ''), spec: String(it.spec || ''),
       price: it.price === undefined || it.price === '' ? null : Number(it.price),
       priceTo: it.priceTo === undefined || it.priceTo === '' ? null : Number(it.priceTo),
       suffix: String(it.suffix ?? ''), desc: String(it.desc || ''), images: [], visible: it.visible !== false,
+      prices: (it.prices || []).map(p => ({ label: String(p.label || ''), price: p.price === undefined || p.price === '' || p.price === null ? null : Number(p.price), suffix: String(p.suffix || '') })),
     })),
   });
   const withIds = (k, arr) => arr.map(x => (['rules', 'faqs', 'addons'].includes(k) ? { id: uid(), ...x } : { ...x }));
 
   function apply(d) {
-    const st = getState(), mode = d.mode === 'append' ? 'append' : 'replace';
+    const st = getState();
     if (d.settings) {
       for (const [k, v] of Object.entries(d.settings)) {
         if (!SETTINGS_KEYS.includes(k)) continue;
@@ -89,14 +100,14 @@ export function createImportUI({ getState, markDirty, removeCats, queueDel, rere
       for (const [k, v] of Object.entries(d.content)) {
         if (!CONTENT_KEYS.includes(k)) continue;
         if (k === 'about') { for (const [ak, av] of Object.entries(v || {})) if (ABOUT_KEYS.includes(ak)) st.content.about[ak] = av; }
-        else if (Array.isArray(v)) st.content[k] = mode === 'append' ? [...(st.content[k] || []), ...withIds(k, v)] : withIds(k, v);
+        else if (Array.isArray(v)) st.content[k] = modeFor(d, k) === 'append' ? [...(st.content[k] || []), ...withIds(k, v)] : withIds(k, v);
         else st.content[k] = v;
       }
       markDirty('content');
     }
     if (d.categories) {
       const cats = d.categories.map(cleanCat);
-      if (mode === 'append') st.categories.push(...cats);
+      if (modeFor(d, 'categories') === 'append') st.categories.push(...cats);
       else {
         removeCats(st.categories.map(c => c.id));
         queueDel('categories', st.categories.flatMap(c => c.items.flatMap(i => i.images || [])));
@@ -128,7 +139,7 @@ export function createImportUI({ getState, markDirty, removeCats, queueDel, rere
     if (!report) return '';
     if (report.error) return `<div class="imp-box err">⚠ ${esc(report.error)}</div>`;
     return `<div class="imp-box">
-      <p><b>模式：</b>${report.mode === 'append' ? '新增（加在現有內容後面）' : '取代（換掉對應的現有內容）'}</p>
+      <p><b>模式：</b>${report.mode === 'mixed' ? '依區塊分別新增或取代（見下方）' : report.mode === 'append' ? '新增（加在現有內容後面）' : '取代（換掉對應的現有內容）'}</p>
       <ul>${report.ok.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
       ${report.warn.length ? `<ul class="warn">${report.warn.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
       <button class="btn sm" data-imp="apply">套用到後台</button>
@@ -172,7 +183,7 @@ export function createImportUI({ getState, markDirty, removeCats, queueDel, rere
       if (a === 'preview') preview();
       if (a === 'export') exportJSON();
       if (a === 'apply' && parsed) {
-        if (report.mode === 'replace' && parsed.categories && !confirm('取代模式會換掉目前整個價目表（儲存後生效）。確定套用？')) return;
+        if (modeFor(parsed, 'categories') === 'replace' && parsed.categories && !confirm('取代模式會換掉目前整個價目表（儲存後生效）。確定套用？')) return;
         apply(parsed);
         parsed = null; report = null;
         rerender();

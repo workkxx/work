@@ -1,5 +1,5 @@
 // 後台「客戶與點數」：客戶資料、交易紀錄、點數。每個動作會直接存檔（不走右上角的儲存按鈕）。
-import { esc, fmt } from './common.js?v=20261124j';
+import { esc, fmt } from './common.js?v=20261124n';
 
 export const STATUSES = ['洽談中', '已付款', '製作中', '已完成', '已取消', '點數調整'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

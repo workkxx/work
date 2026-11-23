@@ -216,7 +216,7 @@ body.ready #main { opacity: 1; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
 .card { background: var(--bg-card); color: var(--text); display: flex; flex-direction: column; border: 2px solid var(--line); transition: .3s; position: relative; }
 .card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(40, 40, 40, .5); z-index: 2; }
-.card-img { all: unset; display: block; height: 210px; overflow: hidden; background: var(--bg-deep); border-bottom: 1px solid var(--line); }
+.card-img { all: unset; display: block; height: 230px; overflow: hidden; background: var(--bg-deep); border-bottom: 1px solid var(--line); }
 .card-img img { width: 100%; height: 100%; object-fit: cover; object-position: center top; filter: grayscale(100%) contrast(1.2); transition: .45s; }
 .card:hover .card-img img { filter: none; transform: scale(1.03); }
 .card-img.noimg { display: grid; place-items: center; font: 700 11px/1 var(--mono); letter-spacing: .3em; color: #9A9A9A; background: #C8C8C8; }
@@ -386,4 +386,61 @@ body.ready #main { opacity: 1; }
   .rec-table .memo { min-width: 0; }
   .rec-table td:empty { display: none; }
   .rec-table .pt.plus::after { display: none; }
+}
+
+/* ---------- 價目：提醒框、多張範例圖、多段價格 ---------- */
+.callout { display: flex; gap: 12px; align-items: flex-start; background: #EFEFEC; padding: 14px 18px; margin: 0 0 18px; font-size: 14px; color: var(--ink); }
+.callout .co-mark { flex: none; color: var(--accent); font-size: 18px; line-height: 1.4; }
+.callout .prose p { margin: 0 0 .4em; }
+.card-gallery { display: grid; grid-template-columns: 1fr; gap: 3px; height: 230px; background: var(--bg-card); border-bottom: 1px solid var(--line); }
+.card-gallery.has-side { grid-template-columns: 2fr 1fr; }
+.card-gallery .card-img { height: auto; min-height: 0; border: 0; position: relative; }
+.card-gallery .cg-main { height: 100%; }
+.cg-side { display: grid; grid-auto-rows: 1fr; gap: 3px; min-height: 0; }
+.cg-side .card-img { height: 100%; }
+.cg-more { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(40, 40, 40, .6); color: #FAFAFA; font: 700 15px/1 var(--mono); }
+.price.multi { flex-direction: column; align-items: stretch; gap: 6px; }
+.price.multi .pr { display: flex; align-items: baseline; gap: 4px; }
+.price.multi .pl { min-width: 4.5em; font: 700 12px/1 var(--sans); letter-spacing: .1em; color: var(--text-2); }
+.price.multi .pr:last-child .pl { color: var(--accent); }
+.price.multi .num { font-size: 24px; }
+
+/* ---------- 價目項目（參考 Notion：大圖＋右側小圖，下方標題與價格） ---------- */
+.entries { display: flex; flex-direction: column; gap: 44px; }
+.entry { padding-bottom: 40px; border-bottom: 1px dashed #C8C8C8; }
+.entry:last-child { border-bottom: 0; padding-bottom: 0; }
+.entry-gallery { display: grid; grid-template-columns: 1fr; gap: 0 8%; align-items: start; max-width: 760px; }
+.entry-gallery.has-side { grid-template-columns: 58% 34%; }
+.entry-gallery:not(.has-side) .eg-main { max-width: 58%; }
+.eg-side { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.eg-img { all: unset; display: block; max-width: 100%; }
+.eg-img img { display: block; max-width: 100%; height: auto; border-radius: 3px; transition: opacity .25s, transform .25s; }
+.eg-main .eg-img, .eg-main .eg-img img { width: 100%; }
+.eg-img:hover img { opacity: .88; }
+.eg-side .eg-img img { max-height: 280px; width: auto; }
+.eg-empty { aspect-ratio: 4 / 3; background: #C8C8C8; display: grid; place-items: center; border-radius: 3px; }
+.eg-empty span { font: 700 11px/1 var(--mono); letter-spacing: .3em; color: #9A9A9A; }
+.entry-title { margin: 26px 0 6px; display: flex; align-items: center; gap: 8px; font: 700 20px/1.35 var(--sans); letter-spacing: .06em; color: var(--ink); }
+.entry-title .mark { color: var(--accent); font-size: 18px; }
+.entry-spec { margin: 0 0 6px; font-size: 13px; color: var(--ink-3); }
+.entry-price { margin: 4px 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 15px; color: var(--ink); }
+.entry-price .pl { font-weight: 700; }
+.entry-price .ep.last .pl { background: linear-gradient(transparent 60%, color-mix(in srgb, var(--accent) 40%, transparent) 60%); }
+.entry-price .num { font: 700 20px/1 var(--serif); }
+.entry-price small { font: 700 11px/1 var(--mono); letter-spacing: .05em; color: var(--ink-2); }
+.entry-price .suf { font-size: 13px; color: var(--ink-2); }
+.entry-price .sep { color: var(--ink-3); }
+.entry-price .ep { white-space: nowrap; }
+.entry-com { margin: 6px 0 0; font-size: 13px; color: var(--ink-3); }
+.entry-com small { font-size: 10.5px; }
+.entry-desc { margin-top: 10px; font-size: 14px; color: var(--ink-2); }
+@media (max-width: 760px) {
+  .entry-gallery.has-side { grid-template-columns: 62% 32%; gap: 0 6%; }
+  .entry-gallery:not(.has-side) .eg-main { max-width: 80%; }
+  .eg-side { gap: 8px; }
+  .eg-side .eg-img img { max-height: 160px; }
+  .entry-title { font-size: 18px; }
+  .entry-price .num { font-size: 18px; }
+  .entry-price .sep { display: none; }
+  .entry-price { flex-direction: column; gap: 2px; }
 }

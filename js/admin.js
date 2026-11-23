@@ -1,9 +1,9 @@
-import { store, DEMO } from './store.js?v=20261124j';
-import { OWNER_EMAIL } from '../config.js?v=20261124j';
-import { esc, normalize, uid, STATUS } from './common.js?v=20261124j';
-import { TEMPLATE } from './demo-data.js?v=20261124j';
-import { createClientsUI } from './admin-clients.js?v=20261124j';
-import { createImportUI } from './admin-import.js?v=20261124j';
+import { store, DEMO } from './store.js?v=20261124n';
+import { OWNER_EMAIL } from '../config.js?v=20261124n';
+import { esc, normalize, uid, STATUS } from './common.js?v=20261124n';
+import { TEMPLATE } from './demo-data.js?v=20261124n';
+import { createClientsUI } from './admin-clients.js?v=20261124n';
+import { createImportUI } from './admin-import.js?v=20261124n';
 
 const S = await store;
 const app = document.getElementById('app');
@@ -201,6 +201,7 @@ const PANELS = {
             <span class="muted sm">${c.items.length} 個項目${c.visible === false ? '・已隱藏' : ''}</span></summary>
           ${rowTools('categories', i, state.categories.length)}
           <div class="grid2">${f.text(`${cp}.name`, '類別名稱')}${f.text(`${cp}.desc`, '簡短說明')}</div>
+          ${f.area(`${cp}.callout`, '提醒框（顯示在項目上方，可不填）', { rows: 2, hint: RICH_HINT })}
           ${f.area(`${cp}.notes`, '類別備註（顯示在項目下方）', { rows: 2, hint: RICH_HINT })}
           ${f.check(`${cp}.visible`, '在前台顯示這個類別')}
           <h4 class="sub">項目</h4>
@@ -213,6 +214,9 @@ const PANELS = {
               ${f.num(`${ip}.price`, '價格 NT$', { ph: '1500' })}
               ${f.num(`${ip}.priceTo`, '最高價（區間用，可不填）')}
               ${f.text(`${ip}.suffix`, '單位/後綴', { ph: '起' })}
+            </div>
+            <div class="fld"><span>多段價格（例：自帶價／常態；有填的話會取代上面的單一價格）</span>
+              ${list(`${ip}.prices`, pp => `<div class="grid3">${f.text(`${pp}.label`, '名稱', { ph: '自帶價' })}${f.num(`${pp}.price`, '價格 NT$')}${f.text(`${pp}.suffix`, '單位/後綴', { ph: '起' })}</div>`, '新增一段價格', x => esc(x.label || ''))}
             </div>
             ${f.area(`${ip}.desc`, '說明', { rows: 2, hint: RICH_HINT })}
             ${f.imgs(`${ip}.images`)}
@@ -267,7 +271,8 @@ function blank(path) {
   const key = path.split('.').filter(k => isNaN(k)).pop();
   return ({
     categories: () => ({ id: uid(), name: '新類別', desc: '', notes: '', visible: true, items: [] }),
-    items: () => ({ id: uid(), name: '', spec: '', price: null, priceTo: null, suffix: '起', desc: '', images: [], visible: true }),
+    items: () => ({ id: uid(), name: '', spec: '', price: null, priceTo: null, suffix: '起', desc: '', images: [], prices: [], visible: true }),
+    prices: () => ({ label: '', price: null, suffix: '' }),
     addons: () => ({ id: uid(), name: '', mode: 'fixed', price: null, priceText: '', note: '' }),
     process: () => ({ title: '', desc: '' }),
     payment: () => ({ name: '', note: '' }),

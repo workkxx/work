@@ -1,6 +1,6 @@
-import { store, DEMO } from './store.js?v=20261124j';
-import { OWNER_EMAIL } from '../config.js?v=20261124j';
-import { esc, rich, priceHTML, addonPrice, fmt, STATUS } from './common.js?v=20261124j';
+import { store, DEMO } from './store.js?v=20261124n';
+import { OWNER_EMAIL } from '../config.js?v=20261124n';
+import { esc, rich, priceHTML, multiPriceHTML, minPrice, addonPrice, fmt, STATUS } from './common.js?v=20261124n';
 
 const page = document.body.dataset.page;
 const main = document.getElementById('main');
@@ -96,7 +96,7 @@ function home({ settings: s, categories }) {
     ${cats.length ? block('INDEX', '委託項目', `
       <div class="cat-index">
         ${cats.map((c, i) => {
-          const prices = c.items.filter(it => it.visible !== false && has(it.price)).map(it => Number(it.price));
+          const prices = c.items.filter(it => it.visible !== false).map(minPrice).filter(v => v !== null);
           return `<a class="cat-chip" href="price.html#cat-${esc(c.id)}">
             <span class="cat-no">${pad(i + 1)}</span>
             <span class="cat-name">${esc(c.name)}</span>
@@ -126,21 +126,16 @@ function price({ settings: s, content: c, categories }) {
       <section class="cat" id="cat-${esc(cat.id)}">
         <div class="t-head"><span class="badge">SEC.${pad(ci + 1)}</span><h2 class="t-title">${esc(cat.name)}</h2></div>
         ${cat.desc ? `<p class="cat-desc">${esc(cat.desc)}</p>` : ''}
-        <div class="cards">
-          ${items.map((it, ii) => `
-            <article class="card">
-              ${it.images.length ? `
-                <button class="card-img" data-gallery="${esc(it.images.join(','))}" aria-label="查看範例">
-                  <img data-thumb="${esc(it.images[0])}" alt="${esc(it.name)} 範例">
-                </button>` : '<div class="card-img noimg"><span>NO SAMPLE</span></div>'}
-              <div class="card-index"><span class="idx">${pad(ii + 1)}</span><span class="type">${it.images.length ? `SAMPLE ×${it.images.length}` : esc(cat.name)}</span></div>
-              <div class="card-body">
-                <h3>${esc(it.name)}</h3>
-                ${it.spec ? `<p class="spec">${esc(it.spec)}</p>` : ''}
-                ${it.desc ? `<div class="card-desc">${rich(it.desc)}</div>` : ''}
-                <div class="price">${priceHTML(it)}</div>
-                ${rate && has(it.price) ? `<p class="price-com"><span>COMM.</span> NT$ ${fmt(Math.round(it.price * rate))}${has(it.priceTo) ? ` – ${fmt(Math.round(it.priceTo * rate))}` : ''}${it.suffix ? ' ' + esc(it.suffix) : ''}</p>` : ''}
-              </div>
+        ${cat.callout ? `<div class="callout"><span class="co-mark">✱</span><div class="prose">${rich(cat.callout)}</div></div>` : ''}
+        <div class="entries">
+          ${items.map(it => `
+            <article class="entry">
+              ${galleryHTML(it)}
+              <h3 class="entry-title"><span class="mark">✱</span>${esc(it.name)}</h3>
+              ${it.spec ? `<p class="entry-spec">${esc(it.spec)}</p>` : ''}
+              <p class="entry-price">${entryPrice(it)}</p>
+              ${rate && has(it.price) && !it.prices.length ? `<p class="entry-com">商用 ${fmt(Math.round(it.price * rate))}${has(it.priceTo) ? ` – ${fmt(Math.round(it.priceTo * rate))}` : ''} <small>NTD</small>${it.suffix ? ' ' + esc(it.suffix) : ''}</p>` : ''}
+              ${it.desc ? `<div class="entry-desc prose">${rich(it.desc)}</div>` : ''}
             </article>`).join('')}
         </div>
         ${cat.notes ? `<div class="cat-notes prose">${rich(cat.notes)}</div>` : ''}
@@ -157,7 +152,30 @@ function price({ settings: s, content: c, categories }) {
     ${s.commercialNote ? block('COMM.', '商業用途', `<div class="prose lined">${rich(s.commercialNote)}</div>`) : ''}
     <div class="must-read"><span class="mr-mark">!</span><p>委託前請務必閱讀 <a href="rules.html">委託須知</a>。</p></div>`;
   main.innerHTML = sheet(label('price'), 'PRICE LIST', body, s);
-  main.querySelectorAll('[data-gallery]').forEach(b => b.addEventListener('click', () => gallery(b.dataset.gallery.split(','))));
+  main.querySelectorAll('[data-gallery]').forEach(b => b.addEventListener('click', () => gallery(b.dataset.gallery.split(','), Number(b.dataset.start) || 0)));
+}
+
+// 範例圖：左邊一張大圖，右邊其餘小圖依原比例往下排（參考 Notion 並排）
+function galleryHTML(it) {
+  const ids = it.images || [];
+  if (!ids.length) return '<div class="entry-gallery"><div class="eg-main eg-empty"><span>NO SAMPLE</span></div></div>';
+  const all = esc(ids.join(','));
+  const btn = (id, i) => `<button class="eg-img" data-gallery="${all}" data-start="${i}" aria-label="查看範例 ${i + 1}"><img data-thumb="${esc(id)}" alt="${esc(it.name)} 範例 ${i + 1}"></button>`;
+  return `<div class="entry-gallery ${ids.length > 1 ? 'has-side' : ''}">
+    <div class="eg-main">${btn(ids[0], 0)}</div>
+    ${ids.length > 1 ? `<div class="eg-side">${ids.slice(1).map((id, i) => btn(id, i + 1)).join('')}</div>` : ''}
+  </div>`;
+}
+
+// 價格行：自帶價 6,000 NTD ／ 常態 4,500 NTD
+function entryPrice(it) {
+  const n = (v, suf) => `<span class="num">${fmt(v)}</span> <small>NTD</small>${suf ? ` <span class="suf">${esc(suf)}</span>` : ''}`;
+  const rows = (it.prices || []).filter(p => p && (has(p.price) || (p.label || '').trim()));
+  if (rows.length) {
+    return rows.map((p, i) => `<span class="ep ${i === rows.length - 1 && rows.length > 1 ? 'last' : ''}"><span class="pl">${esc(p.label || '')}</span> ${has(p.price) ? n(p.price, p.suffix) : esc(p.suffix || '另議')}</span>`).join('<span class="sep">／</span>');
+  }
+  if (!has(it.price)) { const t = (it.suffix || '').trim(); return `<span class="ep">${esc(!t || t === '起' ? '另議' : t)}</span>`; }
+  return `<span class="ep"><span class="num">${fmt(it.price)}</span>${has(it.priceTo) ? ` – <span class="num">${fmt(it.priceTo)}</span>` : ''} <small>NTD</small>${it.suffix ? ` <span class="suf">${esc(it.suffix)}</span>` : ''}</span>`;
 }
 
 // ================= 委託須知 =================

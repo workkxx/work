@@ -29,7 +29,7 @@ export function normalize(d = {}) {
     content,
     categories: (d.categories || []).map(c => ({
       id: c.id || uid(), name: '', desc: '', notes: '', visible: true, ...c,
-      items: (c.items || []).map(it => ({ id: it.id || uid(), images: [], visible: true, suffix: '', ...it })),
+      items: (c.items || []).map(it => ({ id: it.id || uid(), images: [], visible: true, suffix: '', ...it, prices: Array.isArray(it.prices) ? it.prices : [] })),
     })),
     empty: !!d.empty,
   };
@@ -63,6 +63,20 @@ export function rich(text = '') {
 
 export const fmt = n => Number(n).toLocaleString('zh-TW');
 const has = n => n !== null && n !== undefined && n !== '' && !Number.isNaN(Number(n));
+
+// 多段價格（例：自帶價／常態），有填就取代單一價格
+export function multiPriceHTML(it) {
+  const rows = (it.prices || []).filter(p => p && (has(p.price) || (p.label || '').trim()));
+  if (!rows.length) return '';
+  return rows.map(p => `<div class="pr"><span class="pl">${esc(p.label || '')}</span>${has(p.price)
+    ? `<span class="cur">NT$</span><span class="num">${fmt(p.price)}</span>${p.suffix ? `<span class="suf">${esc(p.suffix)}</span>` : ''}`
+    : `<span class="price-ask">${esc(p.suffix || '另議')}</span>`}</div>`).join('');
+}
+export function minPrice(it) {
+  const v = (it.prices || []).filter(p => has(p.price)).map(p => Number(p.price));
+  if (has(it.price)) v.push(Number(it.price));
+  return v.length ? Math.min(...v) : null;
+}
 
 export function priceHTML(it) {
   if (!has(it.price)) {
