@@ -1,9 +1,9 @@
-import { store, DEMO } from './store.js?v=20261124n';
-import { OWNER_EMAIL } from '../config.js?v=20261124n';
-import { esc, normalize, uid, STATUS } from './common.js?v=20261124n';
-import { TEMPLATE } from './demo-data.js?v=20261124n';
-import { createClientsUI } from './admin-clients.js?v=20261124n';
-import { createImportUI } from './admin-import.js?v=20261124n';
+import { store, DEMO } from './store.js?v=20261124q';
+import { OWNER_EMAIL } from '../config.js?v=20261124q';
+import { esc, normalize, uid, STATUS } from './common.js?v=20261124q';
+import { TEMPLATE } from './demo-data.js?v=20261124q';
+import { createClientsUI } from './admin-clients.js?v=20261124q';
+import { createImportUI } from './admin-import.js?v=20261124q';
 
 const S = await store;
 const app = document.getElementById('app');
@@ -261,9 +261,7 @@ const PANELS = {
       ${f.area('content.about.bio', '介紹', { rows: 4, hint: RICH_HINT })}
       <h4 class="sub">社群連結</h4>
       ${list('content.about.links', p => `<div class="grid2">${f.text(`${p}.label`, '名稱', { ph: 'Plurk' })}${f.text(`${p}.url`, '網址', { ph: 'https://' })}</div>`, '新增連結')}`) +
-    card('委託聯絡', `${f.text('content.about.email', '委託信箱')}${f.area('content.about.contactNote', '聯絡說明', { rows: 4, hint: RICH_HINT })}`) +
-    card('謹防詐騙・官方帳號', `${f.area('content.about.officialNote', '說明', { rows: 3 })}
-      ${list('content.about.official', p => `<div class="grid2">${f.text(`${p}.platform`, '平台')}${f.text(`${p}.account`, '帳號')}</div>`, '新增帳號')}`),
+    card('委託聯絡', `${f.text('content.about.email', '委託信箱')}${f.area('content.about.contactNote', '聯絡說明', { rows: 4, hint: RICH_HINT })}`),
 };
 
 // ================= 新增項目的範本 =================

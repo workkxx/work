@@ -1,6 +1,6 @@
-import { store, DEMO } from './store.js?v=20261124n';
-import { OWNER_EMAIL } from '../config.js?v=20261124n';
-import { esc, rich, priceHTML, multiPriceHTML, minPrice, addonPrice, fmt, STATUS } from './common.js?v=20261124n';
+import { store, DEMO } from './store.js?v=20261124q';
+import { OWNER_EMAIL } from '../config.js?v=20261124q';
+import { esc, rich, priceHTML, multiPriceHTML, minPrice, addonPrice, fmt, STATUS } from './common.js?v=20261124q';
 
 const page = document.body.dataset.page;
 const main = document.getElementById('main');
@@ -218,9 +218,7 @@ function about({ settings: s, content: { about: a } }) {
     ${a.email || a.contactNote ? block('TRANSMISSION', '委託聯絡', `
       ${a.email ? `<p class="email"><a href="mailto:${esc(a.email)}">${esc(a.email)}</a></p>` : ''}
       ${a.contactNote ? `<div class="prose lined">${rich(a.contactNote)}</div>` : ''}`) : ''}
-    ${a.official.length ? block('WARNING', '謹防詐騙', `
-      ${a.officialNote ? `<div class="prose lined">${rich(a.officialNote)}</div>` : ''}
-      <table class="acc">${a.official.map(o => `<tr><th>${esc(o.platform)}</th><td>${esc(o.account)}</td></tr>`).join('')}</table>`) : ''}`;
+`;
   main.innerHTML = sheet(label('about'), 'ABOUT & CONTACT', body, s);
 }
 

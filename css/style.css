@@ -70,22 +70,22 @@ body.ready #main { opacity: 1; }
 @keyframes blink { 50% { opacity: .15; } }
 
 /* 分頁標籤（與後台相同樣式） */
-.layout { display: grid; grid-template-columns: 96px 1fr; gap: 32px; padding-top: 8px; padding-bottom: 24px; }
+.layout { display: grid; grid-template-columns: 80px 1fr; gap: 32px; padding-top: 8px; padding-bottom: 24px; }
 .layout > #main { grid-column: 2; }
 .side {
-  position: fixed; z-index: 50; top: 50%; transform: translateY(-50%); width: 96px;
+  position: fixed; z-index: 50; top: 50%; transform: translateY(-50%); width: 80px;
   left: max(40px, calc(50% - var(--w) / 2 + 40px));
   display: flex; flex-direction: column;
 }
 .side a {
-  display: block; text-decoration: none; text-align: left; padding: 9px 12px; margin-bottom: 4px; word-break: break-all;
+  display: block; text-decoration: none; text-align: left; padding: 9px 10px; margin-bottom: 4px; word-break: break-all;
   color: var(--text); font-weight: 700; font-size: 14px; letter-spacing: .04em;
-  background: rgba(42, 42, 42, .9); border: 1px solid var(--line); border-left: 4px solid var(--line);
+  background: #2A2A2A; border: 0;
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
   transition: .2s;
 }
-.side a:hover { color: #FAFAFA; background: var(--bg-card); border-left-color: var(--accent); transform: translateX(4px); }
-.side a.on { background: var(--accent); color: #282828; border-color: var(--accent); }
+.side a:hover { color: #FAFAFA; background: #383838; transform: translateX(4px); }
+.side a.on { background: var(--accent); color: #282828; }
 
 /* ---------- hero ---------- */
 .hero {
