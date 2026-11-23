@@ -17,7 +17,7 @@ export const DEMO_DATA = {
     siteName: '麥的委託價目表',
     subtitle: '原創角色設定・角色文字・校對潤稿',
     status: 'open',
-    statusText: '2027 年 1 月檔期剩 2 名',
+    statusText: '【 商用 】\n可來信詢問\n【 非商用 】\n預計2027年2月開放',
     announcement: '目前開放 1–2 月檔期，名額以收到完整委託表單的順序為準。\n\n委託前請務必先閱讀〈委託須知〉，送出委託即視為已閱讀並同意。',
     accent: '#AAA55A',
     marquee: '/// COMMISSION OPEN /// 2027.01 檔期剩 2 名 /// 委託前請先閱讀委託須知 ///',

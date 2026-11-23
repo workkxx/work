@@ -5,8 +5,8 @@ import {
 import {
   getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut as fbSignOut, onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { firebaseConfig } from './config.js?v=20261124b';
-import { normalize, compressImage, uid, clean } from './common.js?v=20261124b';
+import { firebaseConfig } from '../config.js?v=20261124g';
+import { normalize, compressImage, uid, clean } from './common.js?v=20261124g';
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);

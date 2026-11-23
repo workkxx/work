@@ -1,8 +1,8 @@
-import { store, DEMO } from './store.js?v=20261124b';
-import { OWNER_EMAIL } from './config.js?v=20261124b';
-import { esc, normalize, uid, STATUS } from './common.js?v=20261124b';
-import { TEMPLATE } from './demo-data.js?v=20261124b';
-import { createClientsUI } from './admin-clients.js?v=20261124b';
+import { store, DEMO } from './store.js?v=20261124g';
+import { OWNER_EMAIL } from '../config.js?v=20261124g';
+import { esc, normalize, uid, STATUS } from './common.js?v=20261124g';
+import { TEMPLATE } from './demo-data.js?v=20261124g';
+import { createClientsUI } from './admin-clients.js?v=20261124g';
 
 const S = await store;
 const app = document.getElementById('app');
@@ -165,15 +165,11 @@ const PANELS = {
   settings: () => head('網站設定', '網站名稱、接案狀態與首頁公告。') +
     card('基本資料', `<div class="grid2">
       ${f.text('settings.siteName', '網站名稱')}
-      ${f.text('settings.subtitle', '副標題', { ph: '例：插圖・角色設定' })}
-    </div>
-    ${f.color('settings.accent', '主題色')}`) +
-    card('首頁封面', `
-      <div class="grid2">${f.text('settings.heroTitle', '封面大標', { ph: 'COMMISSION', hint: '第一個字母後面會加上主題色的 ✸' })}${f.img('settings.heroImage', '封面圖（建議橫幅 1600×500 以上）')}</div>`) +
-    card('接案狀態', `<div class="grid2">
-      ${f.select('settings.status', '狀態', Object.entries(STATUS).map(([k, v]) => [k, v.label]))}
-      ${f.text('settings.statusText', '狀態說明', { ph: '例：1 月檔期剩 2 名' })}
+      ${f.color('settings.accent', '主題色')}
     </div>`) +
+    card('接案狀態', `
+      ${f.select('settings.status', '狀態', Object.entries(STATUS).map(([k, v]) => [k, v.label]))}
+      ${f.area('settings.statusText', '狀態說明（顯示在每頁右上角 STATUS 框）', { rows: 5, ph: '【 商用 】\n可來信詢問\n【 非商用 】\n預計2027年2月開放', hint: '以「【」開頭的那一行是粗體標題，標題和下面幾行會成一欄，各欄並排顯示' })}`) +
     card('首頁公告', f.area('settings.announcement', '公告內容', { rows: 6, hint: RICH_HINT })) +
     card('商用價格', `<div class="grid2">
       ${f.num('settings.commercialRate', '商用倍率', { ph: '例：2', hint: '填了之後，價目表每個項目會自動顯示「商用 NT$…」；留空就不顯示' })}

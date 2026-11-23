@@ -1,6 +1,6 @@
-import { store, DEMO } from './store.js?v=20261124b';
-import { OWNER_EMAIL } from './config.js?v=20261124b';
-import { esc, rich, priceHTML, addonPrice, fmt, STATUS } from './common.js?v=20261124b';
+import { store, DEMO } from './store.js?v=20261124g';
+import { OWNER_EMAIL } from '../config.js?v=20261124g';
+import { esc, rich, priceHTML, addonPrice, fmt, STATUS } from './common.js?v=20261124g';
 
 const page = document.body.dataset.page;
 const main = document.getElementById('main');
@@ -41,6 +41,18 @@ function shell({ settings: s }) {
   document.getElementById('site-footer').innerHTML = '<div class="foot">©HIWA</div>';
 }
 
+// 接案狀態說明：以「【」開頭的行為粗體標題，每個標題連同下面幾行成一欄，各欄並排
+function statusNote(text) {
+  const groups = [];
+  for (const raw of String(text).split(/\r?\n/)) {
+    const l = raw.trim();
+    if (!l) continue;
+    if (/^【/.test(l) || !groups.length) groups.push([]);
+    groups[groups.length - 1].push(/^【/.test(l) ? `<b>${esc(l)}</b>` : `<span>${esc(l)}</span>`);
+  }
+  return groups.map(g => `<div class="sn-col">${g.join('')}</div>`).join('');
+}
+
 // 筆記本紙張：SUBJECT / DATE / 貼紙框
 function sheet(subject, en, body, s) {
   const d = new Date();
@@ -56,10 +68,12 @@ function sheet(subject, en, body, s) {
         <div class="sh-line"><span class="lab">DATE :</span><span class="val mono">${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}</span>
           <span class="week">${order.map(w => `<b class="${w === today ? 'on' : ''}">${w}</b>`).join(' ')}</span></div>
       </div>
-      <div class="sticker-box">
-        <span class="sticker-lab">STATUS</span>
-        <div class="sticker st-${esc(s.status)}"><b>${st.label}</b><small>${st.en}</small></div>
-        ${s.statusText ? `<span class="sticker-note">${esc(s.statusText)}</span>` : ''}
+      <div class="slip-holder st-${esc(s.status)}">
+        <div class="slip">
+          <p class="slip-title"><i></i>COMMISSION ${st.en}<small>${st.label}</small></p>
+          ${s.statusText ? `<div class="slip-note">${statusNote(s.statusText)}</div>` : ''}
+        </div>
+        <span class="slip-slot"></span>
       </div>
     </header>
     <div class="sheet-body">${body}</div>
@@ -73,7 +87,6 @@ function block(badge, title, body, extra = '') {
 // ================= 首頁 =================
 function home({ settings: s, categories }) {
   const cats = categories.filter(c => c.visible !== false);
-  const title = (s.heroTitle || 'COMMISSION').trim();
   const body = `
     ${s.announcement ? block('NOTICE', '公告', `<div class="prose lined">${rich(s.announcement)}</div>`) : ''}
     <div class="must-read"><span class="mr-mark">!</span><p>委託前請務必閱讀 <a href="rules.html">委託須知</a>，送出委託即視為已閱讀並同意。</p></div>
@@ -93,14 +106,7 @@ function home({ settings: s, categories }) {
       <a class="btn" href="price.html">查看價目表 ▸</a>
       <a class="btn ghost" href="rules.html">委託須知</a>
     </div>`;
-  main.innerHTML = `
-    <div class="hero" ${s.heroImage ? `data-full="${esc(s.heroImage)}"` : ''}>
-      <div class="hero-in">
-        ${s.subtitle ? `<p class="hero-sub">${esc(s.subtitle)}</p>` : ''}
-        <h1 class="hero-title"><span class="first">${esc(title[0] || '')}</span>${esc(title.slice(1))}</h1>
-      </div>
-    </div>
-    ${sheet(esc(s.siteName), 'HOME', body, s)}`;
+  main.innerHTML = sheet(esc(s.siteName), 'HOME', body, s);
 }
 
 // ================= 價目表 =================
