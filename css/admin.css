@@ -208,3 +208,11 @@ body {
 .panel > .ib[data-cl="back"], #cl-root > .ib[data-cl="back"] { background: #2A2A2A; color: #D0D0D0; border-color: #444; padding: 5px 12px; }
 .fld input[type=email], .fld input[type=date] { width: 100%; padding: 8px 10px; border: 1px solid var(--line); background: #FAFAFA; }
 @media (max-width: 800px) { .cl-add { grid-template-columns: 1fr; } .cl-add .btn { margin-bottom: 8px; } }
+
+/* ===== 匯入資料 ===== */
+.imp-box { margin-top: 6px; padding: 14px 18px; background: #FAFAFA; border: 1px solid var(--accent); }
+.imp-box.err { border-color: #b33; color: #8a2a2a; }
+.imp-box p { margin: 0 0 6px; }
+.imp-box ul { margin: 0 0 12px; padding-left: 20px; }
+.imp-box ul.warn { color: #8a6a1a; }
+.imp-box .btn { margin-right: 10px; }

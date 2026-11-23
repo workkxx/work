@@ -1,14 +1,25 @@
-import { store, DEMO } from './store.js?v=20261124i';
-import { OWNER_EMAIL } from '../config.js?v=20261124i';
-import { esc, normalize, uid, STATUS } from './common.js?v=20261124i';
-import { TEMPLATE } from './demo-data.js?v=20261124i';
-import { createClientsUI } from './admin-clients.js?v=20261124i';
+import { store, DEMO } from './store.js?v=20261124j';
+import { OWNER_EMAIL } from '../config.js?v=20261124j';
+import { esc, normalize, uid, STATUS } from './common.js?v=20261124j';
+import { TEMPLATE } from './demo-data.js?v=20261124j';
+import { createClientsUI } from './admin-clients.js?v=20261124j';
+import { createImportUI } from './admin-import.js?v=20261124j';
 
 const S = await store;
 const app = document.getElementById('app');
 const CL = createClientsUI({ S, toast: (m, e) => toast(m, e) });
 app.addEventListener('click', e => CL.onClick(e));
 app.addEventListener('input', e => CL.onInput(e));
+const IM = createImportUI({
+  getState: () => state,
+  markDirty: root => mark(root),
+  removeCats: ids => removedCats.push(...ids),
+  queueDel: (root, ids) => queueDel(root, ids),
+  rerender: () => renderApp(),
+  toast: (m, e) => toast(m, e),
+});
+app.addEventListener('click', e => IM.onClick(e));
+app.addEventListener('change', e => IM.onChange(e));
 
 let state = null;
 let user = null;
@@ -28,6 +39,7 @@ const TABS = [
   ['faq', '常見問題'],
   ['about', '關於與聯絡'],
   ['clients', '客戶與點數'],
+  ['import', '匯入資料'],
 ];
 
 // ================= 登入 =================
@@ -231,6 +243,8 @@ const PANELS = {
 
   faq: () => head('常見問題') +
     list('content.faqs', p => `${f.text(`${p}.q`, '問題')}${f.area(`${p}.a`, '回答', { rows: 3, hint: RICH_HINT })}`, '新增問題', (x, i) => `Q${i + 1}`),
+
+  import: () => head('匯入資料', '把整理好的內容（JSON）一次匯入。套用後只會先改在後台畫面上，確認沒問題再按右上角「儲存變更」才會正式存檔。') + IM.html(),
 
   clients: () => head('客戶與點數', '客戶用 Google 登入〈會員查詢〉頁，只看得到自己的紀錄與點數。這一頁的新增、修改會立即存檔。') +
     '<div id="cl-root"></div>' +
