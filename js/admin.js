@@ -1,9 +1,9 @@
-import { store, DEMO } from './store.js?v=20261124q';
-import { OWNER_EMAIL } from '../config.js?v=20261124q';
-import { esc, normalize, uid, STATUS } from './common.js?v=20261124q';
-import { TEMPLATE } from './demo-data.js?v=20261124q';
-import { createClientsUI } from './admin-clients.js?v=20261124q';
-import { createImportUI } from './admin-import.js?v=20261124q';
+import { store, DEMO } from './store.js?v=20261124x';
+import { OWNER_EMAIL } from '../config.js?v=20261124x';
+import { esc, normalize, uid, STATUS } from './common.js?v=20261124x';
+import { TEMPLATE } from './demo-data.js?v=20261124x';
+import { createClientsUI } from './admin-clients.js?v=20261124x';
+import { createImportUI } from './admin-import.js?v=20261124x';
 
 const S = await store;
 const app = document.getElementById('app');
@@ -106,8 +106,8 @@ function renderSide() {
 function renderPanel() {
   const p = document.getElementById('panel');
   const y = window.scrollY;
-  p.innerHTML = (wasEmpty && !DEMO ? `
-    <div class="banner">資料庫目前是空的。可以直接開始填寫，或先 <button class="linkbtn" data-act="import">匯入範本內容</button> 再修改。</div>` : '') + PANELS[tab]();
+  p.innerHTML = '<span class="clip" aria-hidden="true"></span><div class="paper">' + (wasEmpty && !DEMO ? `
+    <div class="banner">資料庫目前是空的。可以直接開始填寫，或先 <button class="linkbtn" data-act="import">匯入範本內容</button> 再修改。</div>` : '') + PANELS[tab]() + '</div>';
   hydrate(p);
   if (tab === 'clients') CL.mount(document.getElementById('cl-root'));
   window.scrollTo(0, y);

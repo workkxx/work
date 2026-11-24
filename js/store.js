@@ -1,6 +1,6 @@
-import { firebaseConfig } from '../config.js?v=20261124q';
+import { firebaseConfig } from '../config.js?v=20261124x';
 
 export const DEMO = !firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('YOUR');
 
 // 兩個後端有相同的介面：loadAll / getThumb / getImage / save* / uploadImage / deleteImage / onAuth / signIn / signOut
-export const store = DEMO ? import('./backend-demo.js?v=20261124q') : import('./backend-firebase.js?v=20261124q');
+export const store = DEMO ? import('./backend-demo.js?v=20261124x') : import('./backend-firebase.js?v=20261124x');

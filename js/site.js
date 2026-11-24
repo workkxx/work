@@ -1,6 +1,6 @@
-import { store, DEMO } from './store.js?v=20261124q';
-import { OWNER_EMAIL } from '../config.js?v=20261124q';
-import { esc, rich, priceHTML, multiPriceHTML, minPrice, addonPrice, fmt, STATUS } from './common.js?v=20261124q';
+import { store, DEMO } from './store.js?v=20261124x';
+import { OWNER_EMAIL } from '../config.js?v=20261124x';
+import { esc, rich, priceHTML, multiPriceHTML, minPrice, addonPrice, fmt, STATUS } from './common.js?v=20261124x';
 
 const page = document.body.dataset.page;
 const main = document.getElementById('main');
@@ -14,6 +14,16 @@ const NAV = [
   ['about', 'about.html', '聯絡', 'CONTACT'],
   ['member', 'member.html', '會員查詢', 'MEMBER'],
 ];
+// 分頁貼紙的形狀（只取形狀；貼紙裡只放分頁文字）
+const STICKERS = [
+  { vb: '0 0 100 90', text: 'top:58%', d: 'M50 6C55 6 58 9 61 14L95 72C99 80 95 86 86 86H14C5 86 1 80 5 72L39 14C42 9 45 6 50 6Z' },
+  { vb: '0 0 110 92', text: 'top:60%', d: 'M30 20C20 18 16 15 16 12C16 6 34 3 55 3S94 6 94 12C94 15 90 18 80 20L106 88H4Z' },
+  { vb: '0 0 112 80', text: 'top:50%', d: 'M6 16C28 4 50 24 74 13C88 7 98 6 106 9L102 66C82 59 64 77 40 70C26 66 16 64 4 69Z' },
+  { vb: '0 0 92 100', text: 'top:66%;left:54%', d: 'M30 44V18C30 7 45 5 47 17L50 38H76C86 38 88 48 82 52C88 56 86 64 80 66C85 70 82 78 76 79C80 84 76 92 68 92H30C21 92 17 86 17 78V55C17 48 23 44 30 44Z' },
+  { vb: '0 0 100 92', text: 'top:43%', d: 'M24 6H76C86 6 94 14 94 24V52C94 62 86 70 76 70H42L22 88L27 70H24C14 70 6 62 6 52V24C6 14 14 6 24 6Z' },
+  { vb: '0 0 112 86', text: 'top:57%', d: 'M8 17C8 12 12 8 17 8H42C46 8 48 10 50 13L54 19H95C100 19 104 23 104 28V70C104 75 100 79 95 79H17C12 79 8 75 8 70Z' },
+];
+
 const pad = n => String(n).padStart(2, '0');
 const has = n => n !== null && n !== undefined && n !== '';
 
@@ -35,9 +45,20 @@ function shell({ settings: s }) {
   const cur = NAV.find(n => n[0] === page);
   document.title = page === 'home' ? s.siteName : `${cur[2]}｜${s.siteName}`;
   const st = STATUS[s.status] || STATUS.closed;
-
-  document.getElementById('site-header').innerHTML = DEMO ? '<div class="demo-bar">DEMO MODE // 尚未連接 Firebase，內容為範例資料</div>' : '';
-  document.getElementById('site-nav').innerHTML = NAV.map(([k, href, zh]) => `<a href="${href}" class="${k === page ? 'on' : ''}">${esc(zh)}</a>`).join('');
+  document.getElementById('site-header').innerHTML = (DEMO ? '<div class="demo-bar">DEMO MODE // 尚未連接 Firebase，內容為範例資料</div>' : '') + `
+    <aside class="status-tag st-${esc(s.status)}" aria-label="接案狀態">
+      <span class="tag-hole" aria-hidden="true"></span>
+      <div class="tag-body">
+        <p class="tag-title"><i></i>COMMISSION ${st.en}</p>
+        <p class="tag-label">${st.label}</p>
+        ${s.statusText ? `<div class="tag-note">${statusNote(s.statusText)}</div>` : ''}
+      </div>
+    </aside>`;
+  document.getElementById('site-nav').innerHTML = NAV.map(([k, href, zh], i) => {
+    const sh = STICKERS[i % STICKERS.length];
+    return `<a href="${href}" class="stk stk-${i + 1} ${k === page ? 'on' : ''}" ${k === page ? 'aria-current="page"' : ''}>
+      <svg viewBox="${sh.vb}" aria-hidden="true"><path d="${sh.d}"/></svg><span style="${sh.text}">${esc(zh)}</span></a>`;
+  }).join('');
 
   document.getElementById('site-footer').innerHTML = '<div class="foot">©HIWA</div>';
 }
@@ -62,24 +83,28 @@ function sheet(subject, en, body, s) {
   const days = ['Su', 'M', 'T', 'W', 'Th', 'F', 'S'];
   const order = ['M', 'T', 'W', 'Th', 'F', 'S', 'Su'];
   const today = days[d.getDay()];
-  const st = STATUS[s.status] || STATUS.closed;
   return `
   <article class="sheet">
+    <span class="clip" aria-hidden="true"></span>
+    <div class="paper">
     <header class="sheet-head">
       <div class="sh-lines">
         <div class="sh-line"><span class="lab">SUBJECT TOPIC :</span><h1 class="val">${subject}</h1><span class="en">${en}</span></div>
         <div class="sh-line"><span class="lab">DATE :</span><span class="val mono">${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}</span>
           <span class="week">${order.map(w => `<b class="${w === today ? 'on' : ''}">${w}</b>`).join(' ')}</span></div>
       </div>
-      <div class="slip-holder st-${esc(s.status)}">
-        <div class="slip">
-          <p class="slip-title"><i></i>COMMISSION ${st.en}<small>${st.label}</small></p>
-          ${s.statusText ? `<div class="slip-note">${statusNote(s.statusText)}</div>` : ''}
-        </div>
-        <span class="slip-slot"></span>
-      </div>
     </header>
     <div class="sheet-body">${body}</div>
+    </div>
+  </article>`;
+}
+
+// 首頁：整張硫酸紙夾在筆記紙上
+function coverSheet(inner) {
+  return `
+  <article class="sheet">
+    <span class="clip" aria-hidden="true"></span>
+    <div class="paper cover">${inner}</div>
   </article>`;
 }
 
@@ -90,26 +115,30 @@ function block(badge, title, body, extra = '') {
 // ================= 首頁 =================
 function home({ settings: s, categories }) {
   const cats = categories.filter(c => c.visible !== false);
+  const rule = '<p class="g-rule" aria-hidden="true"></p>';
   const body = `
-    ${s.announcement ? block('NOTICE', '公告', `<div class="prose lined">${rich(s.announcement)}</div>`) : ''}
-    <div class="must-read"><span class="mr-mark">!</span><p>委託前請務必閱讀 <a href="rules.html">委託須知</a>，送出委託即視為已閱讀並同意。</p></div>
-    ${cats.length ? block('INDEX', '委託項目', `
-      <div class="cat-index">
-        ${cats.map((c, i) => {
-          const prices = c.items.filter(it => it.visible !== false).map(minPrice).filter(v => v !== null);
-          return `<a class="cat-chip" href="price.html#cat-${esc(c.id)}">
-            <span class="cat-no">${pad(i + 1)}</span>
-            <span class="cat-name">${esc(c.name)}</span>
-            <span class="cat-from">${prices.length ? `NT$ ${fmt(Math.min(...prices))} ~` : 'ASK'}</span>
-            <span class="cat-arrow">▸</span>
-          </a>`;
-        }).join('')}
-      </div>`) : ''}
-    <div class="hero-actions">
-      <a class="btn" href="price.html">查看價目表 ▸</a>
-      <a class="btn ghost" href="rules.html">委託須知</a>
+    <div class="glassine">
+      <span class="g-flap g-flap-top" aria-hidden="true"></span>
+      <span class="g-flap g-flap-bottom" aria-hidden="true"></span>
+      <span class="g-flap g-flap-side" aria-hidden="true"></span>
+      <div class="g-content">
+        <h1 class="g-title">${esc(s.siteName)}</h1>
+        <p class="g-label">INDEX<br>COMMISSION</p>
+        ${s.announcement ? `${rule}<section class="g-sec"><p class="g-key">NOTICE：</p><div class="prose g-text">${rich(s.announcement)}</div></section>` : ''}
+        ${cats.length ? `${rule}<section class="g-sec"><p class="g-key">MENU：</p>
+          <div class="g-list">${cats.map((c, i) => {
+            const prices = c.items.filter(it => it.visible !== false).map(minPrice).filter(v => v !== null);
+            return `<a class="g-row" href="price.html#cat-${esc(c.id)}"><span class="g-no">${pad(i + 1)}</span><span class="g-name">${esc(c.name)}</span><span class="g-dots"></span><span class="g-price">${prices.length ? `NT$ ${fmt(Math.min(...prices))} ~` : 'ASK'}</span></a>`;
+          }).join('')}</div></section>` : ''}
+        ${rule}
+        <p class="g-note">*委託前請務必閱讀 <a href="rules.html">委託須知</a>，送出委託即視為已閱讀並同意。</p>
+        <div class="hero-actions">
+          <a class="btn" href="price.html">查看價目表 ▸</a>
+          <a class="btn ghost" href="rules.html">委託須知</a>
+        </div>
+      </div>
     </div>`;
-  main.innerHTML = sheet(esc(s.siteName), 'HOME', body, s);
+  main.innerHTML = coverSheet(body);
 }
 
 // ================= 價目表 =================

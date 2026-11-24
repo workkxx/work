@@ -1,7 +1,7 @@
 // 示範模式：還沒設定 Firebase 時使用，資料存在這台瀏覽器的 localStorage
-import { DEMO_DATA, DEMO_IMAGES, DEMO_CLIENTS } from './demo-data.js?v=20261124q';
-import { OWNER_EMAIL } from '../config.js?v=20261124q';
-import { normalize, compressImage, uid, clean } from './common.js?v=20261124q';
+import { DEMO_DATA, DEMO_IMAGES, DEMO_CLIENTS } from './demo-data.js?v=20261124x';
+import { OWNER_EMAIL } from '../config.js?v=20261124x';
+import { normalize, compressImage, uid, clean } from './common.js?v=20261124x';
 
 const KEY = 'commission-demo-v1';
 const IMG = 'commission-demo-img-';

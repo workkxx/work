@@ -1,5 +1,5 @@
 // 後台「匯入資料」：貼上或選擇 JSON → 預覽 → 套用到後台（還沒寫入資料庫，按「儲存變更」才會存）
-import { esc, uid, DEFAULTS } from './common.js?v=20261124q';
+import { esc, uid, DEFAULTS } from './common.js?v=20261124x';
 
 const SETTINGS_KEYS = Object.keys(DEFAULTS.settings);
 const CONTENT_KEYS = Object.keys(DEFAULTS.content);
